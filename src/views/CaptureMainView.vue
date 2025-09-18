@@ -89,6 +89,14 @@
                                     </v-btn>
 
 
+                                    <v-btn :class="['compact-button', 'icon-button']" icon="mdi-upload"
+                                        @click="triggerMarkdownUpload" color="#2081C3">
+                                        <svg-icon type="mdi" :path="mdiUpload" class="expand-icon"
+                                            style="height: 40px;height: 40px;"></svg-icon>
+                                    </v-btn>
+                                    <input ref="markdownInputRef" type="file" accept=".md,text/markdown" hidden
+                                        @change="handleMarkdownChange" />
+
                                     <v-btn :class="['compact-button', 'icon-button']" icon="mdi-arrow-up-circle"
                                         @click="ConversationModel" color="#2081C3">
                                         <svg-icon type="mdi" :path="mdiMicrophone" class="expand-icon"
@@ -127,7 +135,7 @@ import XChatGPTComponent from '@/components/XChatGPTComponent.vue';
 import DoClassifyComponent from '@/components/DoClassifyComponent.vue';
 import { globalState } from '@/utils/store';
 import { ref, watch, onMounted, watchEffect, onUpdated, nextTick } from 'vue';
-import { mdiArrowUpCircle, mdiMicrophone, mdiCog } from '@mdi/js';
+import { mdiArrowUpCircle, mdiMicrophone, mdiCog, mdiUpload } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import ChipGroupComponent from '@/components/ChipGroupComponent.vue';
 import GPTSVGComponent from '@/components/GPTSVGComponent.vue';
@@ -138,12 +146,14 @@ import AnalysisCard from '@/components/ResultSecComponent/AnalysisCard.vue';
 import EditableArea from '@/components/EditableArea.vue';
 import { sendDefault, sendGuide, sendMistake, sendFeynman, sendexplanation } from '@/utils/handleChatRequest.js';
 import { getCommunication, getFeiman, getIns, getPersonalCom, getWrong } from "../utils/handleChatRequest";
+import { uploadMarkdownToMilvus } from '@/utils/handleUploadMarkdown.js';
 import StepsCard from '@/components/ResultSecComponent/StepsCard.vue';
 
 const componentKey = ref(0);
 const textValue = ref('');
 const ConversationShow = ref(false);
 const dialog = ref(false);
+const markdownInputRef = ref(null);
 function onStepChange(newStep) {
     console.log('newStep:', newStep);
     switch (newStep) {
@@ -318,6 +328,27 @@ function openDialog() {
 var tags = globalState.steps.map((item, index) => {
     return `步骤${index + 1}`;
 });
+
+function triggerMarkdownUpload() {
+    if (markdownInputRef.value) {
+        markdownInputRef.value.value = null;
+        markdownInputRef.value.click();
+    }
+}
+
+async function handleMarkdownChange(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!/\.md$/i.test(file.name)) {
+        return;
+    }
+    try {
+        const res = await uploadMarkdownToMilvus(file);
+        console.log('Markdown uploaded:', res?.data);
+    } catch (e) {
+        console.error('Markdown upload failed', e);
+    }
+}
 
 </script>
 

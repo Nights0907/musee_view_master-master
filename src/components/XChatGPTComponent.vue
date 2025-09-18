@@ -92,6 +92,12 @@
       </v-btn>
 
 
+      <v-btn :class="['compact-button', 'icon-button']" icon="mdi-upload" @click="triggerMarkdownUpload"
+        color="#2081C3">
+        <svg-icon type="mdi" :path="mdiUpload" class="expand-icon" style="height: 40px;height: 40px;"></svg-icon>
+      </v-btn>
+      <input ref="markdownInputRef" type="file" accept=".md,text/markdown" hidden @change="handleMarkdownChange" />
+
       <v-btn :class="['compact-button', 'icon-button']" icon="mdi-arrow-up-circle" @click="ConversationModel"
         color="#2081C3">
         <svg-icon type="mdi" :path="mdiMicrophone" class="expand-icon" style="height: 40px;height: 40px;"></svg-icon>
@@ -114,7 +120,7 @@
 
 <script setup>
 import { ref, watchEffect, onMounted, nextTick, onUpdated, watch } from 'vue';
-import { mdiArrowUpCircle, mdiMicrophone, mdiFormatListBulletedType } from '@mdi/js';
+import { mdiArrowUpCircle, mdiMicrophone, mdiFormatListBulletedType, mdiUpload } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import ChipGroupComponent from './ChipGroupComponent.vue';
 import GPTSVGComponent from './GPTSVGComponent.vue';
@@ -125,10 +131,12 @@ import { sendDefault, sendGuide, sendMistake, sendFeynman, sendexplanation } fro
 import { globalState } from '@/utils/store.js';
 import { commonGlobalState } from '@/utils/commonStore.js';
 import { getCommunication, getFeiman, getIns, getPersonalCom, getWrong } from "../utils/handleChatRequest";
+import { uploadMarkdownToMilvus } from '@/utils/handleUploadMarkdown.js';
 
 const textValue = ref('');
 const ConversationShow = ref(false);
 const dialog = ref(false);
+const markdownInputRef = ref(null);
 const items = [
   { title: '默认配置' },
   { title: '引导式问答' },
@@ -288,6 +296,28 @@ function openDialog() {
 var tags = globalState.steps.map((item, index) => {
   return `步骤${index + 1}`;
 });
+
+function triggerMarkdownUpload() {
+  if (markdownInputRef.value) {
+    markdownInputRef.value.value = null;
+    markdownInputRef.value.click();
+  }
+}
+
+async function handleMarkdownChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!/\.md$/i.test(file.name)) {
+    // 仅允许 Markdown 文件
+    return;
+  }
+  try {
+    const res = await uploadMarkdownToMilvus(file);
+    console.log('Markdown uploaded:', res?.data);
+  } catch (e) {
+    console.error('Markdown upload failed', e);
+  }
+}
 
 </script>
 
