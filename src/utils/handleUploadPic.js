@@ -17,6 +17,7 @@ export const handleUploadCommonPic = async (formData) =>
                 const temp = response.data.data
                 globalState.qid = temp.basicQuestion.qid
                 globalState.title = temp.basicQuestion.questionText
+                globalState.questionText = temp.basicQuestion.questionText
                 globalState.Analyserdata = temp.concreteQuestion.questionAnalysis
                 globalState.questionAnswer = temp.concreteQuestion.questionAnswer
                 globalState.steps = temp.concreteQuestion.questionSteps

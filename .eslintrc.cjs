@@ -2,7 +2,7 @@ module.exports = {
     "globals": {
         "MathJax": "readonly"
     },
-    "ignorePatterns": ["commitlint.config.js", "vite.config.js", "**/node_modules/"],
+    "ignorePatterns": ["commitlint.config.js", "vite.config.js", "**/node_modules/", "dist/"],
     "env": {
         "browser": true,
         "es2021": true

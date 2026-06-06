@@ -56,11 +56,11 @@
     </div>
 
     <div v-else style="height: 65vh;overflow-y: auto;margin: 20px 0 0 0;" ref="scrollContainer">
-      <div v-for="(message, index) in globalState.dialogueArray.slice(1)" :key="index">
+      <div v-for="(message, index) in displayedMessages" :key="index">
         <ChatComponent v-if="message.speaker == 'user'" :userMessage="message.message" :avatarSrc="user.avatarSrc"
           :userName="message.speaker" :userInfo="user.userInfo"></ChatComponent>
         <ChatComponent v-else :userMessage="message.message" :avatarSrc="user.avatarSrc" :userName="message.speaker"
-          :userInfo="user.userInfo"></ChatComponent>
+          :userInfo="user.userInfo" :typing="message.typing === true"></ChatComponent>
       </div>
 
     </div>
@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, onMounted, nextTick, onUpdated, watch } from 'vue';
+import { ref, computed, watchEffect, onMounted, nextTick, onUpdated, watch } from 'vue';
 import { mdiArrowUpCircle, mdiMicrophone, mdiFormatListBulletedType, mdiUpload } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import ChipGroupComponent from './ChipGroupComponent.vue';
@@ -146,8 +146,7 @@ const items = [
 ];
 const user = ref({ 'userName': '测试01', 'avatarSrc': 'user-avatar.jpg', 'userInfo': '别人能做到的事情，我也能做到。' });
 const scrollContainer = ref(null);
-
-
+const displayedMessages = computed(() => globalState.dialogueArray);
 
 onMounted(() => {
   updateFormula();

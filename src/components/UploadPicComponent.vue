@@ -107,23 +107,27 @@ function handleFileChange(event) {
 
 
 function uploadFile() {
-  let formData = new FormData();
-  formData.append('question', selectedFile.value);
-
-  let wrongFormData = new FormData();
-  wrongFormData.append('wrongAnswer', selectedFile.value);
-  wrongFormData.append("qid",globalState.history[0].qid)
-
   commonGlobalState.dialogVisible = true
   commonGlobalState.warntitle = '让小沐想想看哈~'
   console.log(commonGlobalState.chatModel);
   switch (commonGlobalState.chatModel) {
-    case 2:
+    case 2: {
+      if (!globalState.history[0]?.qid) {
+        commonGlobalState.dialogVisible = false
+        return;
+      }
+      let wrongFormData = new FormData();
+      wrongFormData.append('wrongAnswer', selectedFile.value);
+      wrongFormData.append("qid", globalState.history[0].qid)
       handleUploadMistakePic(wrongFormData);
       break;
-    default:
+    }
+    default: {
+      let formData = new FormData();
+      formData.append('question', selectedFile.value);
       handleUploadCommonPic(formData);
       break;
+    }
   }
 }
 </script>

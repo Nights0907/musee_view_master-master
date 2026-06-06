@@ -6,6 +6,13 @@ const Axios = axios.create({
     timeout: 1000 * 1000,
 });
 
+Axios.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.userToken = token;
+    }
+    return config;
+});
 
 // 响应拦截器
 Axios.interceptors.response.use(

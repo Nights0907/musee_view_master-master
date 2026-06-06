@@ -13,7 +13,7 @@
         </div>
 
         <!-- Right Section -->
-        <div class="right-section" :key="componentKey">
+        <div class="right-section">
             <XChatGPTComponent></XChatGPTComponent>
         </div>
 
@@ -50,12 +50,13 @@
                                 </div>
                                 <div v-else style="height: 50vh;overflow-y: auto;margin: 20px 0 0 0;"
                                     ref="scrollContainer">
-                                    <div v-for="(message, index) in globalState.dialogueArray.slice(1)" :key="index">
+                                    <div v-for="(message, index) in displayedMessages" :key="index">
                                         <ChatComponent v-if="message.speaker == 'user'" :userMessage="message.message"
                                             :avatarSrc="user.avatarSrc" :userName="message.speaker"
                                             :userInfo="user.userInfo"></ChatComponent>
                                         <ChatComponent v-else :userMessage="message.message" :avatarSrc="user.avatarSrc"
-                                            :userName="message.speaker" :userInfo="user.userInfo"></ChatComponent>
+                                            :userName="message.speaker" :userInfo="user.userInfo"
+                                            :typing="message.typing === true"></ChatComponent>
                                     </div>
 
                                 </div>
@@ -134,7 +135,7 @@ import UploadPicComponent from '@/components/UploadPicComponent.vue';
 import XChatGPTComponent from '@/components/XChatGPTComponent.vue';
 import DoClassifyComponent from '@/components/DoClassifyComponent.vue';
 import { globalState } from '@/utils/store';
-import { ref, watch, onMounted, watchEffect, onUpdated, nextTick } from 'vue';
+import { ref, computed, watch, onMounted, watchEffect, onUpdated, nextTick } from 'vue';
 import { mdiArrowUpCircle, mdiMicrophone, mdiCog, mdiUpload } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
 import ChipGroupComponent from '@/components/ChipGroupComponent.vue';
@@ -149,7 +150,6 @@ import { getCommunication, getFeiman, getIns, getPersonalCom, getWrong } from ".
 import { uploadMarkdownToMilvus } from '@/utils/handleUploadMarkdown.js';
 import StepsCard from '@/components/ResultSecComponent/StepsCard.vue';
 
-const componentKey = ref(0);
 const textValue = ref('');
 const ConversationShow = ref(false);
 const dialog = ref(false);
@@ -178,6 +178,8 @@ function onStepChange(newStep) {
 
 const user = ref({ 'userName': '测试01', 'avatarSrc': 'user-avatar.jpg', 'userInfo': '别人能做到的事情，我也能做到。' });
 const scrollContainer = ref(null);
+const displayedMessages = computed(() => globalState.dialogueArray);
+
 onMounted(() => {
     updateFormula();
     textValue.value = '';
@@ -196,13 +198,6 @@ function updateFormula() {
         nextTick(convert);
     }, 0);
 }
-
-// 监听某个响应式状态的变化
-watch(globalState, (newValue, oldValue) => {
-    // 当状态发生变化时，改变key以强制组件重新创建
-    console.log('render again');
-    componentKey.value++;
-});
 
 watchEffect(() => {
     dialog.value;

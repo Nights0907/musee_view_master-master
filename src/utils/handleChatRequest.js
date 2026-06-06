@@ -15,7 +15,8 @@ export const sendDefault = (textValue) => {
             speaker: 'assistant',
             message: '',
             avatarSrc: 'assistant-avatar.jpg',
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            typing: true
         });
 
         // 对用户输入进行编码，准备发送
@@ -36,8 +37,9 @@ export const sendDefault = (textValue) => {
             // 监听错误事件
             globalState.eventSource.onerror = (_error) => {
                 commonGlobalState.dialogVisible = false;
-                globalState.eventSource.close(); // 关闭出错的连接
-                globalState.eventSource = null; // 重置 eventSource 变量，允许重建连接
+                globalState.dialogueArray[globalState.dialogueArray.length - 1].typing = false;
+                globalState.eventSource.close();
+                globalState.eventSource = null;
             };
         }
     }).catch(function (error) {
@@ -58,7 +60,8 @@ export const sendMistake = (textValue) => {
             speaker: 'assistant',
             message: '',
             avatarSrc: 'assistant-avatar.jpg',
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            typing: true
         });
 
         // 对用户输入进行编码，准备发送
@@ -79,8 +82,9 @@ export const sendMistake = (textValue) => {
             // 监听错误事件
             globalState.eventSource.onerror = (_error) => {
                 commonGlobalState.dialogVisible = false;
-                globalState.eventSource.close(); // 关闭出错的连接
-                globalState.eventSource = null; // 重置 eventSource 变量，允许重建连接
+                globalState.dialogueArray[globalState.dialogueArray.length - 1].typing = false;
+                globalState.eventSource.close();
+                globalState.eventSource = null;
             };
         }
         commonGlobalState.btnflag = false;
@@ -103,7 +107,8 @@ export const sendGuide = (textValue) => {
             speaker: 'assistant',
             message: '',
             avatarSrc: 'assistant-avatar.jpg',
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            typing: true
         });
 
         // 对用户输入进行编码，准备发送
@@ -125,8 +130,9 @@ export const sendGuide = (textValue) => {
             // 监听错误事件
             globalState.eventSource.onerror = (_error) => {
                 commonGlobalState.dialogVisible = false;
-                globalState.eventSource.close(); // 关闭出错的连接
-                globalState.eventSource = null; // 重置 eventSource 变量，允许重建连接
+                globalState.dialogueArray[globalState.dialogueArray.length - 1].typing = false;
+                globalState.eventSource.close();
+                globalState.eventSource = null;
             };
         }
 
@@ -149,7 +155,8 @@ export const sendFeynman = (textValue) => {
             speaker: 'assistant',
             message: '',
             avatarSrc: 'assistant-avatar.jpg',
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            typing: true
         });
 
         // 对用户输入进行编码，准备发送
@@ -171,8 +178,9 @@ export const sendFeynman = (textValue) => {
             // 监听错误事件
             globalState.eventSource.onerror = (_error) => {
                 commonGlobalState.dialogVisible = false;
-                globalState.eventSource.close(); // 关闭出错的连接
-                globalState.eventSource = null; // 重置 eventSource 变量，允许重建连接
+                globalState.dialogueArray[globalState.dialogueArray.length - 1].typing = false;
+                globalState.eventSource.close();
+                globalState.eventSource = null;
             };
         }
         commonGlobalState.btnflag = false;
@@ -195,7 +203,8 @@ export const sendexplanation = (textValue) => {
             speaker: 'assistant',
             message: '',
             avatarSrc: 'assistant-avatar.jpg',
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            typing: true
         });
 
         // 对用户输入进行编码，准备发送
@@ -217,8 +226,9 @@ export const sendexplanation = (textValue) => {
             // 监听错误事件
             globalState.eventSource.onerror = (_error) => {
                 commonGlobalState.dialogVisible = false;
-                globalState.eventSource.close(); // 关闭出错的连接
-                globalState.eventSource = null; // 重置 eventSource 变量，允许重建连接
+                globalState.dialogueArray[globalState.dialogueArray.length - 1].typing = false;
+                globalState.eventSource.close();
+                globalState.eventSource = null;
             };
         }
         commonGlobalState.btnflag = false;
@@ -246,7 +256,7 @@ export const getCommunication = () => Axios({
             const speaker = index % 2 === 0 ? "user" : "assistant";
             return {
                 speaker: speaker, // 设置发言者
-                message: speaker === "user" ? item.user : item.assistant, // 根据发言者获取消息
+                message: speaker === "user" ? (item.displayUser || item.user) : item.assistant, // 根据发言者获取消息
                 avatarSrc: speaker === "user" ? "user-avatar.jpg" : "assistant-avatar.jpg", // 设置头像，假设有对应的头像文件
                 timestamp: new Date().toLocaleString() // 使用当前时间作为时间戳，您可能需要根据实际情况调整
             };
@@ -277,7 +287,7 @@ export const getWrong = () => Axios({
             const speaker = index % 2 === 0 ? "user" : "assistant";
             return {
                 speaker: speaker, // 设置发言者
-                message: speaker === "user" ? item.user : item.assistant, // 根据发言者获取消息
+                message: speaker === "user" ? (item.displayUser || item.user) : item.assistant, // 根据发言者获取消息
                 avatarSrc: speaker === "user" ? "user-avatar.jpg" : "assistant-avatar.jpg", // 设置头像，假设有对应的头像文件
                 timestamp: new Date().toLocaleString() // 使用当前时间作为时间戳，您可能需要根据实际情况调整
             };
@@ -311,7 +321,7 @@ export const getIns = () => Axios({
             const speaker = index % 2 === 0 ? "user" : "assistant";
             return {
                 speaker: speaker, // 设置发言者
-                message: speaker === "user" ? item.user : item.assistant, // 根据发言者获取消息
+                message: speaker === "user" ? (item.displayUser || item.user) : item.assistant, // 根据发言者获取消息
                 avatarSrc: speaker === "user" ? "user-avatar.jpg" : "assistant-avatar.jpg", // 设置头像，假设有对应的头像文件
                 timestamp: new Date().toLocaleString() // 使用当前时间作为时间戳，您可能需要根据实际情况调整
             };
@@ -343,7 +353,7 @@ export const getPersonalCom = () => Axios({
             const speaker = index % 2 === 0 ? "user" : "assistant";
             return {
                 speaker: speaker, // 设置发言者
-                message: speaker === "user" ? item.user : item.assistant, // 根据发言者获取消息
+                message: speaker === "user" ? (item.displayUser || item.user) : item.assistant, // 根据发言者获取消息
                 avatarSrc: speaker === "user" ? "user-avatar.jpg" : "assistant-avatar.jpg", // 设置头像，假设有对应的头像文件
                 timestamp: new Date().toLocaleString() // 使用当前时间作为时间戳，您可能需要根据实际情况调整
             };
@@ -374,7 +384,7 @@ export const getFeiman = () => Axios({
             const speaker = index % 2 === 0 ? "user" : "assistant";
             return {
                 speaker: speaker, // 设置发言者
-                message: speaker === "user" ? item.user : item.assistant, // 根据发言者获取消息
+                message: speaker === "user" ? (item.displayUser || item.user) : item.assistant, // 根据发言者获取消息
                 avatarSrc: speaker === "user" ? "user-avatar.jpg" : "assistant-avatar.jpg", // 设置头像，假设有对应的头像文件
                 timestamp: new Date().toLocaleString() // 使用当前时间作为时间戳，您可能需要根据实际情况调整
             };

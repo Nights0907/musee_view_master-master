@@ -80,11 +80,13 @@ function handleLogin() {
                 },
             }).then(function (response) {
                 if (response.data.status === 1) {
-                    localStorage.setItem('sid', response.data.data[0]);
-                    localStorage.setItem('token', response.data.data[1]);
+                    localStorage.setItem('sid', response.data.data.sid);
+                    localStorage.setItem('token', response.data.data.token);
                     localStorage.setItem('username', username.value);
+                    commonGlobalState.showModal = false;
+                    return fetchData();
                 }
-                return fetchData();
+                alert(response.data.msg || '登录失败');
             }).catch(function (error) {
                 console.log('登录失败', error);
             });
@@ -111,7 +113,6 @@ function handleLogin() {
                 console.log('登录失败', error);
             });
         }
-        commonGlobalState.showModal = false; // 成功后关闭对话框
     } catch (error) {
         console.error('登录失败', error);
     }
